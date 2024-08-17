@@ -10,7 +10,6 @@ router.get('/', (req, res) => {
   res.json({ message: 'welcome to our blog api!' });
 });
 
-
 router.get('/users', requireAuth, async (req, res) => {
   try {
     res.json({ user: req.user });
@@ -156,7 +155,6 @@ router.route('/posts/:id')
       return res.status(422).json({ error: error.message });
     }
   });
-
 
 router.get('/sign-s3', signS3);
 

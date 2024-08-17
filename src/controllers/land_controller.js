@@ -57,22 +57,23 @@ export async function getLandHolding(name) {
   }
 }
 
-// export async function deletePost(id) {
-//   // Await deleting one owner and receiving confirmation
-//   try {
-//     const deletedPost = await PostModel.findByIdAndDelete(id);
-//     return deletedPost;
-//   } catch (error) {
-//     throw new Error(`delete post error: ${error}`);
-//   }
-// }
-// export async function updatePost(id, postFields) {
-//   // Await updating an owner listing and returning the updated version
-//   try {
-//     await PostModel.findOneAndUpdate({ _id: id }, { title: postFields.title });
-//     const post = await PostModel.findById(id);
-//     return post;
-//   } catch (error) {
-//     throw new Error(`update post error: ${error}`);
-//   }
-// }
+export async function deleteLandHolding(name) {
+  // Await deleting one owner and receiving confirmation
+  try {
+    const deletedLandHolding = await LandModel.findOneAndDelete({ name });
+    return deletedLandHolding;
+  } catch (error) {
+    throw new Error(`Delete land holding error: ${error}`);
+  }
+}
+
+export async function updateLandHolding(name, landData) {
+  // Await updating an owner listing and returning the updated version
+  try {
+    await LandModel.findOneAndUpdate({ name }, { ...landData });
+    const landHolding = await LandModel.findOne({ name });
+    return landHolding;
+  } catch (error) {
+    throw new Error(`Update land holding error: ${error}`);
+  }
+}
