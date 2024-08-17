@@ -58,7 +58,7 @@ export async function getLandHolding(name) {
 }
 
 export async function deleteLandHolding(name) {
-  // Await deleting one owner and receiving confirmation
+  // Await deleting one land holding and receiving confirmation
   try {
     const deletedLandHolding = await LandModel.findOneAndDelete({ name });
     return deletedLandHolding;
@@ -68,7 +68,7 @@ export async function deleteLandHolding(name) {
 }
 
 export async function updateLandHolding(name, landData) {
-  // Await updating an owner listing and returning the updated version
+  // Await updating a land listing and returning the updated version
   try {
     await LandModel.findOneAndUpdate({ name }, { ...landData });
     const landHolding = await LandModel.findOne({ name });

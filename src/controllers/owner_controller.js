@@ -68,22 +68,23 @@ export async function getOwner(ownerName) {
   }
 }
 
-// export async function deletePost(id) {
-//   // Await deleting one owner and receiving confirmation
-//   try {
-//     const deletedPost = await PostModel.findByIdAndDelete(id);
-//     return deletedPost;
-//   } catch (error) {
-//     throw new Error(`delete post error: ${error}`);
-//   }
-// }
-// export async function updatePost(id, postFields) {
-//   // Await updating an owner listing and returning the updated version
-//   try {
-//     await PostModel.findOneAndUpdate({ _id: id }, { title: postFields.title });
-//     const post = await PostModel.findById(id);
-//     return post;
-//   } catch (error) {
-//     throw new Error(`update post error: ${error}`);
-//   }
-// }
+export async function deleteOwner(ownerName) {
+  // Await deleting one owner and receiving confirmation
+  try {
+    const deletedOwner = await OwnerModel.findOneAndDelete({ ownerName });
+    return deletedOwner;
+  } catch (error) {
+    throw new Error(`Delete owner error: ${error}`);
+  }
+}
+
+export async function updateOwner(ownerName, ownerData) {
+  // Await updating an owner listing and returning the updated version
+  try {
+    await OwnerModel.findOneAndUpdate({ ownerName }, { ...ownerData });
+    const updatedOwner = await OwnerModel.findOne({ ownerName });
+    return updatedOwner;
+  } catch (error) {
+    throw new Error(`Update owner error: ${error}`);
+  }
+}
