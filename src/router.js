@@ -10,56 +10,36 @@ router.get('/', (req, res) => {
   res.json({ message: 'Welcome to our owners and land holding API!' });
 });
 
-router.route('/:username')
-  .get(async (req, res) => {
-    try {
-      const { username } = req.params;
-      const user = await User.isUsernameTaken(username);
-      if (user) {
-        res.json(user);
-      } else {
-        res.status(404).send('User not found');
-      }
-    } catch (error) {
-      res.status(422).send({ error: error.toString() });
-    }
-  })
-  .put(async (req, res) => {
-    try {
-      const { username } = req.params;
-      const { user } = req.body;
-      const newUser = await User.updateUser(username, user);
-      res.json(newUser);
-    } catch (error) {
-      console.log(error);
-      res.status(422).send({ error: error.toString() });
-    }
-  });
-
-router.route('/owners')
+router.route('/:userId/owners')
 // fetching owners
   .get(async (req, res) => {
     // use req.body etc to await some contoller function
     // send back the result
     // or catch the error and send back an error
+    const { userId } = req.params;
+
     try {
-      const result = await Owners.getOwners();
+      const result = await User.getOwners(userId);
       return res.json(result);
     } catch (error) {
       return res.status(422).json({ error: error.message });
     }
   })
   .post(async (req, res) => {
-    const fields = req.body;
+    // Store owner data
+    const { userId, ownerData } = req.body;
+
+    // fields = userId, ownerData
+
     try {
-      const result = await Owners.createOwner(fields);
+      const result = await User.saveOwner(userId, ownerData);
       return res.json(result);
     } catch (error) {
       return res.status(422).json({ error: error.message });
     }
   });
 
-router.route('/owners/:ownerName')
+router.route('/:userId/owners/:ownerName')
   .get(async (req, res) => {
     const { ownerName } = req.params;
     try {
@@ -92,7 +72,7 @@ router.route('/owners/:ownerName')
     }
   });
 
-router.route('/landHoldings')
+router.route('/:userId/landHoldings')
 // fetching land holdings
   .get(async (req, res) => {
     // use req.body etc to await some contoller function
@@ -115,7 +95,7 @@ router.route('/landHoldings')
     }
   });
 
-router.route('/landHoldings/:name')
+router.route('/:userId/landHoldings/:name')
   .get(async (req, res) => {
     const { name } = req.params;
     try {

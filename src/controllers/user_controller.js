@@ -3,7 +3,7 @@ import OwnerModel from '../models/owner_model';
 import { isAddressTaken, isOwnerTaken } from './owner_controller';
 
 export const isUserTaken = async (userId) => {
-  const userTaken = await UserModel.findOne({ id: userId });
+  const userTaken = await UserModel.findOne({ userId });
   return userTaken;
 };
 
@@ -18,7 +18,7 @@ export async function getUser(userId) {
 
   // Find user
   try {
-    user = await UserModel.findOne({ id: userId });
+    user = await UserModel.findOne({ userId });
     return user;
   } catch (error) {
     throw new Error(`User not found: ${error}`);
@@ -28,7 +28,7 @@ export async function getUser(userId) {
 export async function createUser(userId, ownerData) {
   // use the User model to create a new user
   const user = new UserModel();
-  user.id = userId;
+  user.userId = userId;
   user.owners = { ownerData };
 
   // Save the user
@@ -40,7 +40,7 @@ export async function createUser(userId, ownerData) {
   }
 }
 
-export async function createOwner(userId, ownerData) {
+export async function saveOwner(userId, ownerData) {
   if (!ownerData || !userId) {
     throw new Error('You must provide the userId and owner data.');
   }
@@ -99,5 +99,37 @@ export async function createOwner(userId, ownerData) {
     return { existingUser, owner: newOwner };
   } catch (error) {
     throw new Error(`Save owner error: ${error}`);
+  }
+}
+
+export async function getOwners(userId) {
+  // Validate inputs
+  if (!userId) {
+    throw new Error('You must provide a user ID');
+  }
+
+  let user;
+
+  // Find user
+  try {
+    user = await UserModel.findOne({ userId });
+    console.log(user);
+  } catch (error) {
+    throw new Error(`User not found: ${error}`);
+  }
+
+  if (!user.owners) {
+    return {};
+  }
+
+  // Fetch the game IDs
+  const ownerNames = Object.keys(user.owners.ownerName);
+
+  // Query for game data
+  try {
+    const games = await OwnerModel.find({ ownerName: { $in: ownerNames } });
+    return games;
+  } catch (error) {
+    throw new Error('Games not found');
   }
 }
