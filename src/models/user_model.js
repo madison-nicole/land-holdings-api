@@ -4,7 +4,6 @@ import mongoose, { Schema } from 'mongoose';
 const UserSchema = new Schema({
   id: { type: String, unique: true },
   owners: { type: Schema.Types.Mixed, default: {} },
-  landHoldings: { type: Schema.Types.Mixed, default: {} },
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },

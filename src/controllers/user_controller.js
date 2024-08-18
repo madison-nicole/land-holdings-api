@@ -1,270 +1,103 @@
-// import dotenv from 'dotenv';
-// import UserModel from '../models/user_model';
+import UserModel from '../models/user_model';
+import OwnerModel from '../models/owner_model';
+import { isAddressTaken, isOwnerTaken } from './owner_controller';
 
-// dotenv.config({ silent: true });
+export const isUserTaken = async (userId) => {
+  const userTaken = await UserModel.findOne({ id: userId });
+  return userTaken;
+};
 
-// export const isUsernameTaken = async (username) => {
-//   const usernameTaken = await UserModel.findOne({ username });
-//   return usernameTaken;
-// };
+// Fetch a user
+export async function getUser(userId) {
+  // Validate inputs
+  if (!userId) {
+    throw new Error('You must provide a user ID.');
+  }
 
-// export const isEmailTaken = async (email) => {
-//   const emailTaken = await UserModel.findOne({ email });
-//   return emailTaken;
-// };
+  let user;
 
-// // fetch a user's info
-// export async function getUser(username) {
-//   // Validate inputs
-//   if (!username) {
-//     throw new Error('You must provide a username');
-//   }
+  // Find user
+  try {
+    user = await UserModel.findOne({ id: userId });
+    return user;
+  } catch (error) {
+    throw new Error(`User not found: ${error}`);
+  }
+}
 
-//   let user;
+export async function createUser(userId, ownerData) {
+  // use the User model to create a new user
+  const user = new UserModel();
+  user.id = userId;
+  user.owners = { ownerData };
 
-//   // Find user
-//   try {
-//     user = await UserModel.findOne({ username });
-//     return user;
-//   } catch (error) {
-//     throw new Error(`User not found: ${error}`);
-//   }
-// }
+  // Save the user
+  try {
+    await user.save();
+    return user;
+  } catch (error) {
+    throw new Error(`Create user error: ${error}`);
+  }
+}
 
-// // update user
-// export async function updateUser(username, newUser) {
-//   // Validate inputs
-//   if (!newUser || !username) {
-//     throw new Error('You must provide a user and username');
-//   }
+export async function createOwner(userId, ownerData) {
+  if (!ownerData || !userId) {
+    throw new Error('You must provide the userId and owner data.');
+  }
 
-//   let user;
+  // See if the user already exists
+  const existingUser = await isUserTaken(userId);
 
-//   // Find user
-//   try {
-//     user = await UserModel.findOne({ username });
-//   } catch (error) {
-//     throw new Error(`User not found: ${error}`);
-//   }
+  // Create a new user if it doesn't exist
+  if (!existingUser) {
+    try {
+      const user = await createUser(userId, ownerData);
+      return user;
+    } catch (error) {
+      throw new Error(`Create user error: ${error}`);
+    }
+  }
 
-//   // update fields
-//   user.username = newUser.username;
-//   user.bio = newUser.bio;
-//   user.website = newUser.website;
-//   user.socials = newUser.socials;
+  // User already exists
+  // If no owners exist
+  if (!existingUser.owners) {
+    existingUser.owners = { ...ownerData };
+  }
 
-//   try {
-//     await user.save();
-//     return user;
-//   } catch (error) {
-//     throw new Error(`save user error: ${error}`);
-//   }
-// }
+  // Use the spread operator to allow for multiple saved owners
+  // Then save the new owner to the user
+  const newOwners = { ...existingUser.owners, ownerData };
+  existingUser.owners = newOwners;
 
-// export async function saveAvatar(username, url) {
-//   // Validate inputs
-//   if (!username || !url) {
-//     throw new Error('You must provide a username and avatar URL');
-//   }
+  // Check if the owner or address already exist
+  const ownerTaken = isOwnerTaken(ownerData.ownerName);
+  const addressTaken = isAddressTaken(ownerData.address);
 
-//   let user;
+  if (ownerTaken || addressTaken) {
+    // If the owner already exists, return an error
+    throw new Error('This owner and/or address already exist.');
+  }
 
-//   // Find user
-//   try {
-//     user = await UserModel.findOne({ username });
-//   } catch (error) {
-//     throw new Error(`finding username error ${error}`);
-//   }
+  // Create a new owner object
+  const newOwner = new OwnerModel();
 
-//   if (!user) {
-//     throw new Error('User not found');
-//   }
+  // Save the fields
+  newOwner.ownerName = ownerData.ownerName;
+  newOwner.entityType = ownerData.entityType;
+  newOwner.ownerType = ownerData.ownerType;
+  newOwner.address = ownerData.address;
+  newOwner.totalHoldings = ownerData.totalHoldings;
+  newOwner.classA = ownerData.classA;
+  newOwner.classB = ownerData.classB;
+  newOwner.classC = ownerData.classC;
+  newOwner.classD = ownerData.classD;
+  newOwner.legalEntities = ownerData.legalEntities;
+  newOwner.mineralAcres = ownerData.mineralAcres;
 
-//   // Store the new avatar url in the user model
-//   user.avatarUrl = url;
-
-//   try {
-//     await user.save();
-//   } catch (error) {
-//     throw new Error(`save user avatar error: ${error}`);
-//   }
-// }
-
-// export async function saveGame(username, game, review = null) {
-//   // Validate inputs
-//   if (!username || !game) {
-//     throw new Error('You must provide username and game');
-//   }
-
-//   let user;
-
-//   // Find user
-//   try {
-//     user = await UserModel.findOne({ username });
-//   } catch (error) {
-//     throw new Error(`finding username error ${error}`);
-//   }
-
-//   if (!user) {
-//     throw new Error('User not found');
-//   }
-
-//   if (!user.games) {
-//     user.games = {};
-//   }
-
-//   // Spread operator to allow for multiple saved games
-//   const newGames = { ...user.games };
-//   // Save game review for user
-//   newGames[game.id] = review;
-//   user.games = newGames;
-
-//   try {
-//     console.log('saving');
-//     await user.save();
-//   } catch (error) {
-//     console.log('error in saving game');
-//     throw new Error(`save user error: ${error}`);
-//   }
-
-//   let existingGame;
-//   // If the game exists already, return
-//   try {
-//     existingGame = await GameModel.findOne({ id: game.id });
-//   } catch (error) {
-//     throw new Error(`finding existing game error: ${error}`);
-//   }
-
-//   if (existingGame) {
-//     return { user, game: existingGame };
-//   }
-
-//   // Otherwise save the new game and return it
-//   const newGame = new GameModel();
-//   newGame.id = game.id;
-//   newGame.name = game.name;
-//   newGame.coverUrl = game.coverUrl;
-//   newGame.summary = game.summary;
-//   newGame.releaseYear = game.releaseYear;
-//   newGame.avgRating = game.avgRating;
-
-//   try {
-//     await newGame.save();
-//     return { user, game: newGame };
-//   } catch (error) {
-//     throw new Error(`save game error: ${error}`);
-//   }
-// }
-
-// // fetch a user's saved games
-// export async function getGames(username) {
-//   // Validate inputs
-//   if (!username) {
-//     throw new Error('You must provide a username');
-//   }
-
-//   let user;
-
-//   // Find user
-//   try {
-//     user = await UserModel.findOne({ username });
-//     console.log(user);
-//   } catch (error) {
-//     throw new Error(`User not found: ${error}`);
-//   }
-
-//   if (!user.games) {
-//     return {};
-//   }
-
-//   // Fetch the game IDs
-//   const gameIDs = Object.keys(user.games);
-
-//   // Query for game data
-//   try {
-//     const games = await GameModel.find({ id: { $in: gameIDs } });
-//     return games;
-//   } catch (error) {
-//     throw new Error('Games not found');
-//   }
-// }
-
-// // delete a user's saved game
-// export async function deleteGame(username, gameId) {
-//   // await deleting a post
-//   // return confirmation
-//   // Validate inputs
-//   if (!username || !gameId) {
-//     throw new Error('You must provide username and game');
-//   }
-
-//   let user;
-
-//   // Find user
-//   try {
-//     user = await UserModel.findOne({ username });
-//   } catch (error) {
-//     throw new Error(`finding username error ${error}`);
-//   }
-
-//   if (!user) {
-//     throw new Error('User not found');
-//   }
-
-//   if (!user.games) {
-//     throw new Error('No user games saved');
-//   }
-
-//   // Spread operator to allow for multiple saved games
-//   const newGames = { ...user.games };
-//   // Delete game
-//   delete newGames[gameId];
-//   user.games = newGames;
-
-//   try {
-//     console.log('deleting');
-//     await user.save();
-//   } catch (error) {
-//     console.log('error in deleting game');
-//     throw new Error(`save user error: ${error}`);
-//   }
-
-//   return user;
-// }
-
-// // update a user's saved game
-// export async function updateGame(username, game, review) {
-// // Validate inputs
-//   if (!username || !game) {
-//     throw new Error('You must provide username and game');
-//   }
-
-//   let user;
-
-//   // Find user
-//   try {
-//     user = await UserModel.findOne({ username });
-//   } catch (error) {
-//     throw new Error(`finding username error ${error}`);
-//   }
-
-//   if (!user) {
-//     throw new Error('User not found');
-//   }
-
-//   // Spread operator to allow for multiple saved games
-//   const newGames = { ...user.games };
-//   // Save game review for user
-//   newGames[game.id] = review;
-//   user.games = newGames;
-
-//   try {
-//     console.log('updating');
-//     await user.save();
-//   } catch (error) {
-//     console.log('error in updating game');
-//     throw new Error(`save user error: ${error}`);
-//   }
-
-//   return user;
-// }
+  try {
+    await newOwner.save();
+    return { existingUser, owner: newOwner };
+  } catch (error) {
+    throw new Error(`Save owner error: ${error}`);
+  }
+}

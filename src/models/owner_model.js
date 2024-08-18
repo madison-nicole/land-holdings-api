@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
 const OwnerSchema = new Schema({
-//   userPhone: { type: String, unique: true },
   ownerName: { type: String, unique: true },
   entityType: { type: String },
   ownerType: { type: String },
@@ -13,6 +12,7 @@ const OwnerSchema = new Schema({
   classD: { type: Number },
   legalEntities: { type: Number },
   mineralAcres: { type: Number },
+  landHoldings: { type: Schema.Types.Mixed, default: {} },
 }, {
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
