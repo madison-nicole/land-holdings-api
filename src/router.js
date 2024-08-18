@@ -10,20 +10,11 @@ router.get('/', (req, res) => {
   res.json({ message: 'Welcome to our owners and land holding API!' });
 });
 
-router.get('/users', requireAuth, async (req, res) => {
-  try {
-    res.json({ user: req.user });
-  } catch (error) {
-    console.log('error');
-    res.status(422).send({ error: error.toString() });
-  }
-});
-
-router.route('/users/:username')
+router.route('/:username')
   .get(async (req, res) => {
     try {
       const { username } = req.params;
-      const user = await UserController.isUsernameTaken(username);
+      const user = await User.isUsernameTaken(username);
       if (user) {
         res.json(user);
       } else {
@@ -42,61 +33,6 @@ router.route('/users/:username')
     } catch (error) {
       console.log(error);
       res.status(422).send({ error: error.toString() });
-    }
-  });
-
-router.route('/:username/games')
-  // fetch games
-  .get(async (req, res) => {
-    const { username } = req.params;
-
-    try {
-      const result = await User.getGames(username);
-      return res.json(result);
-    } catch (error) {
-      // if games not found
-      return res.status(404).json({ error: error.message });
-    }
-  })
-  // log a game for the user
-  .post(requireAuth, async (req, res) => {
-    // store game data
-    const { username } = req.params;
-    const { game } = req.body;
-    const review = req.body?.review;
-
-    try {
-      const { user, game: newGame } = await User.saveGame(username, game, review);
-      return res.json({ user, newGame });
-    } catch (error) {
-      return res.status(422).json({ error: error.message });
-    }
-  })
-  // delete a game for the user
-  .delete(requireAuth, async (req, res) => {
-    // store game data
-    const { username } = req.params;
-    const { gameId } = req.body;
-
-    try {
-      const user = await User.deleteGame(username, gameId);
-      return res.json(user);
-    } catch (error) {
-      return res.status(422).json({ error: error.message });
-    }
-  })
-// update a game for the user
-  .put(requireAuth, async (req, res) => {
-    // store game data
-    const { username } = req.params;
-    const { game } = req.body;
-    const review = req.body?.review;
-
-    try {
-      const user = await User.updateGame(username, game, review);
-      return res.json(user);
-    } catch (error) {
-      return res.status(422).json({ error: error.message });
     }
   });
 
