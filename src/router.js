@@ -24,7 +24,7 @@ router.route('/:username')
       res.status(422).send({ error: error.toString() });
     }
   })
-  .put(requireAuth, async (req, res) => {
+  .put(async (req, res) => {
     try {
       const { username } = req.params;
       const { user } = req.body;
@@ -38,7 +38,7 @@ router.route('/:username')
 
 router.route('/owners')
 // fetching owners
-  .get(requireAuth, async (req, res) => {
+  .get(async (req, res) => {
     // use req.body etc to await some contoller function
     // send back the result
     // or catch the error and send back an error
@@ -49,7 +49,7 @@ router.route('/owners')
       return res.status(422).json({ error: error.message });
     }
   })
-  .post(requireAuth, async (req, res) => {
+  .post(async (req, res) => {
     const fields = req.body;
     try {
       const result = await Owners.createOwner(fields);
@@ -60,7 +60,7 @@ router.route('/owners')
   });
 
 router.route('/owners/:ownerName')
-  .get(requireAuth, async (req, res) => {
+  .get(async (req, res) => {
     const { ownerName } = req.params;
     try {
       const result = await Owners.getOwner(ownerName);
@@ -72,7 +72,7 @@ router.route('/owners/:ownerName')
       return res.status(404).json({ error: error.message });
     }
   })
-  .put(requireAuth, async (req, res) => {
+  .put(async (req, res) => {
     const { ownerName } = req.params;
     const fields = req.body;
     try {
@@ -82,7 +82,7 @@ router.route('/owners/:ownerName')
       return res.status(422).json({ error: error.message });
     }
   })
-  .delete(requireAuth, async (req, res) => {
+  .delete(async (req, res) => {
     const { ownerName } = req.params;
     try {
       const result = await Owners.deleteOwner(ownerName);
@@ -94,7 +94,7 @@ router.route('/owners/:ownerName')
 
 router.route('/landHoldings')
 // fetching land holdings
-  .get(requireAuth, async (req, res) => {
+  .get(async (req, res) => {
     // use req.body etc to await some contoller function
     // send back the result
     // or catch the error and send back an error
@@ -105,7 +105,7 @@ router.route('/landHoldings')
       return res.status(422).json({ error: error.message });
     }
   })
-  .post(requireAuth, async (req, res) => {
+  .post(async (req, res) => {
     const fields = req.body;
     try {
       const result = await Land.createLandHolding(fields);
@@ -116,7 +116,7 @@ router.route('/landHoldings')
   });
 
 router.route('/landHoldings/:name')
-  .get(requireAuth, async (req, res) => {
+  .get(async (req, res) => {
     const { name } = req.params;
     try {
       const result = await Land.getLandHolding(name);
@@ -128,7 +128,7 @@ router.route('/landHoldings/:name')
       return res.status(404).json({ error: error.message });
     }
   })
-  .put(requireAuth, async (req, res) => {
+  .put(async (req, res) => {
     const { name } = req.params;
     const fields = req.body;
     try {
@@ -138,7 +138,7 @@ router.route('/landHoldings/:name')
       return res.status(422).json({ error: error.message });
     }
   })
-  .delete(requireAuth, async (req, res) => {
+  .delete(async (req, res) => {
     const { name } = req.params;
     try {
       const result = await Land.deleteLandHolding(name);

@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 // create a User schema with email and password fields
 const UserSchema = new Schema({
-  userPhone: { type: String, unique: true },
+  id: { type: String, unique: true },
   owners: { type: Schema.Types.Mixed, default: {} },
   landHoldings: { type: Schema.Types.Mixed, default: {} },
 }, {

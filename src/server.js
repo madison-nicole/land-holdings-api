@@ -12,8 +12,8 @@ import apiRoutes from './router';
 const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 // const clientList = await clerkClient.clients.getClientList();
-const userList = await clerkClient.users.getUserList();
-console.log(userList);
+// const userList = await clerkClient.users.getUserList();
+console.log(clerkClient);
 
 // aws s3 communication setup
 dotenv.config({ silent: true });

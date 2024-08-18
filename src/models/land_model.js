@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
 const LandSchema = new Schema({
-//   userPhone: { type: String, unique: true },
   name: { type: String },
   ownerName: { type: String, unique: true },
   legalEntity: { type: String },
