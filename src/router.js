@@ -27,9 +27,8 @@ router.route('/:userId/owners')
   })
   .post(async (req, res) => {
     // Store owner data
-    const { userId, ownerData } = req.body;
-
-    // fields = userId, ownerData
+    const { userId } = req.params;
+    const { ownerData } = req.body;
 
     try {
       const result = await User.saveOwner(userId, ownerData);

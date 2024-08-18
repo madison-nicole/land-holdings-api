@@ -127,9 +127,9 @@ export async function getOwners(userId) {
 
   // Query for game data
   try {
-    const games = await OwnerModel.find({ ownerName: { $in: ownerNames } });
-    return games;
+    const owners = await OwnerModel.find({ ownerName: { $in: ownerNames } });
+    return owners;
   } catch (error) {
-    throw new Error('Games not found');
+    throw new Error('Owners not found');
   }
 }
