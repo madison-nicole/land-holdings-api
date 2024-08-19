@@ -6,14 +6,13 @@ import path from 'path';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import { createClerkClient, ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
+import 'dotenv/config';
+import { createClerkClient, createClerkExpressWithAuth } from '@clerk/clerk-sdk-node';
 import apiRoutes from './router';
 
 const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
-// const clientList = await clerkClient.clients.getClientList();
-// const userList = await clerkClient.users.getUserList();
-console.log(clerkClient);
+const clerkMiddleware = createClerkExpressWithAuth({ clerkClient });
 
 // aws s3 communication setup
 dotenv.config({ silent: true });
@@ -45,27 +44,16 @@ app.use(express.json()); // To parse the incoming requests with JSON payloads
 
 // default index route
 app.get('/', (req, res) => {
-  res.send('hi');
+  res.send('hello world');
 });
 
 // Use the strict middleware that raises an error when unauthenticated
-app.all(
-  '/owners',
-  ClerkExpressRequireAuth({
-    // Add options here
-  }),
-  (req, res) => {
-    res.json(req.auth);
-  },
-);
-
-app.all(
-  '/landHoldings',
-  ClerkExpressRequireAuth({
-    // Add options here
-  }),
-  (req, res) => {
-    res.json(req.auth);
+app.use(
+  '/api/:userId/owners',
+  clerkMiddleware,
+  // ClerkExpressWithAuth(),
+  (req, res, next) => {
+    next();
   },
 );
 
@@ -90,7 +78,7 @@ async function startServer() {
     const mongoURI = process.env.MONGODB_URI;
     await mongoose.connect(mongoURI);
     console.log(`Mongoose connected to: ${mongoURI}`);
-    const port = process.env.PORT || 9090;
+    const port = 9090;
     app.listen(port);
     console.log(`Listening on port ${port}`);
   } catch (error) {
