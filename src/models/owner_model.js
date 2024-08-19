@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 const OwnerSchema = new Schema({
+  userId: { type: String, unique: true },
   ownerName: { type: String, unique: true },
   entityType: { type: String },
   ownerType: { type: String },

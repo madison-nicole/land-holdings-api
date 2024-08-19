@@ -108,26 +108,29 @@ export async function getOwners(userId) {
     throw new Error('You must provide a user ID');
   }
 
+  // See if the user already exists
+  const existingUser = await isUserTaken(userId);
+
   let user;
 
-  // Find user
-  try {
-    user = await UserModel.findOne({ userId });
-    console.log(user);
-  } catch (error) {
-    throw new Error(`User not found: ${error}`);
+  // Create a new user if it doesn't exist
+  if (!existingUser) {
+    try {
+      user = await createUser(userId, {});
+    } catch (error) {
+      throw new Error(`Create user error: ${error}`);
+    }
+  } else {
+    user = existingUser;
   }
 
   if (!user.owners) {
     return {};
   }
 
-  // Fetch the game IDs
-  const ownerNames = Object.keys(user.owners.ownerName);
-
   // Query for game data
   try {
-    const owners = await OwnerModel.find({ ownerName: { $in: ownerNames } });
+    const owners = await OwnerModel.find({ userId });
     return owners;
   } catch (error) {
     throw new Error('Owners not found');

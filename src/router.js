@@ -20,15 +20,21 @@ router.route('/:userId/owners')
 
     try {
       const result = await User.getOwners(userId);
+
+      const resultData = res.json(result);
+      console.log('resultData', resultData);
+
       return res.json(result);
     } catch (error) {
-      return res.status(422).json({ error: error.message });
+      console.log('errorMsg', error.message);
+      return res.status(404).json({ error: error.message });
     }
   })
   .post(async (req, res) => {
     // Store owner data
     const { userId } = req.params;
     const { ownerData } = req.body;
+    console.log('POSTTTTTTTTTT', req.params, req.body);
 
     try {
       const result = await User.saveOwner(userId, ownerData);
@@ -53,9 +59,9 @@ router.route('/:userId/owners/:ownerName')
   })
   .put(async (req, res) => {
     const { ownerName } = req.params;
-    const fields = req.body;
+    const { ownerData } = req.body;
     try {
-      const result = await Owners.updateOwner(ownerName, fields);
+      const result = await Owners.updateOwner(ownerName, ownerData);
       return res.json(result);
     } catch (error) {
       return res.status(422).json({ error: error.message });
