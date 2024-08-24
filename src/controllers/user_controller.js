@@ -70,8 +70,8 @@ export async function saveOwner(userId, ownerData) {
   existingUser.owners = newOwners;
 
   // Check if the owner or address already exist
-  const ownerTaken = isOwnerTaken(ownerData.ownerName);
-  const addressTaken = isAddressTaken(ownerData.address);
+  const ownerTaken = await isOwnerTaken(ownerData.ownerName);
+  const addressTaken = await isAddressTaken(ownerData.address);
 
   if (ownerTaken || addressTaken) {
     // If the owner already exists, return an error
@@ -82,6 +82,7 @@ export async function saveOwner(userId, ownerData) {
   const newOwner = new OwnerModel();
 
   // Save the fields
+  newOwner.userId = userId;
   newOwner.ownerName = ownerData.ownerName;
   newOwner.entityType = ownerData.entityType;
   newOwner.ownerType = ownerData.ownerType;

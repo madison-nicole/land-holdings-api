@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const LandSchema = new Schema({
   name: { type: String, unique: true },
-  ownerName: { type: String, unique: true },
+  ownerName: { type: String },
   legalEntity: { type: String },
   mineralAcres: { type: Number },
   royalty: { type: Number },

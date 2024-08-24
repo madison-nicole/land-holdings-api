@@ -6,13 +6,12 @@ import path from 'path';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import 'dotenv/config';
-import { createClerkClient, createClerkExpressWithAuth } from '@clerk/clerk-sdk-node';
+// import { createClerkClient, createClerkExpressWithAuth } from '@clerk/clerk-sdk-node';
 import apiRoutes from './router';
 
-const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+// const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
-const clerkMiddleware = createClerkExpressWithAuth({ clerkClient });
+// const clerkMiddleware = createClerkExpressWithAuth({ clerkClient });
 
 // aws s3 communication setup
 dotenv.config({ silent: true });
@@ -48,19 +47,19 @@ app.get('/', (req, res) => {
 });
 
 // Use the strict middleware that raises an error when unauthenticated
-app.use(
-  '/api/:userId/owners',
-  clerkMiddleware,
-  // ClerkExpressWithAuth(),
-  (req, res, next) => {
-    next();
-  },
-);
+// app.use(
+//   '/api/:userId/owners',
+//   clerkMiddleware,
+//   // ClerkExpressWithAuth(),
+//   (req, res, next) => {
+//     next();
+//   },
+// );
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(401).send('Unauthenticated!');
-});
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(401).send('Unauthenticated!');
+// });
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
@@ -78,7 +77,7 @@ async function startServer() {
     const mongoURI = process.env.MONGODB_URI;
     await mongoose.connect(mongoURI);
     console.log(`Mongoose connected to: ${mongoURI}`);
-    const port = 9090;
+    const port = process.env.PORT || 9090;
     app.listen(port);
     console.log(`Listening on port ${port}`);
   } catch (error) {
