@@ -1,5 +1,5 @@
 import { Router } from 'express';
-// import * as Owners from './controllers/owner_controller';
+import * as Owners from './controllers/owner_controller';
 // import * as Land from './controllers/land_controller';
 import * as User from './controllers/user_controller';
 // import signS3 from './services/s3';
@@ -45,38 +45,38 @@ router.route('/:userId/owners')
     }
   });
 
-// router.route('/:userId/owners/:ownerName')
-//   .get(async (req, res) => {
-//     const { ownerName } = req.params;
-//     try {
-//       const result = await Owners.getOwner(ownerName);
-//       if (!result) {
-//         return res.status(404).json({ error: 'Owner not found' });
-//       }
-//       return res.json(result);
-//     } catch (error) {
-//       return res.status(404).json({ error: error.message });
-//     }
-//   })
-//   .put(async (req, res) => {
-//     const { ownerName } = req.params;
-//     const { ownerData } = req.body;
-//     try {
-//       const result = await Owners.updateOwner(ownerName, ownerData);
-//       return res.json(result);
-//     } catch (error) {
-//       return res.status(422).json({ error: error.message });
-//     }
-//   })
-//   .delete(async (req, res) => {
-//     const { ownerName } = req.params;
-//     try {
-//       const result = await Owners.deleteOwner(ownerName);
-//       return res.json(result);
-//     } catch (error) {
-//       return res.status(422).json({ error: error.message });
-//     }
-//   });
+router.route('/:userId/owners/:ownerName')
+  .get(async (req, res) => {
+    const { ownerName } = req.params;
+    try {
+      const result = await Owners.getOwner(ownerName);
+      if (!result) {
+        return res.status(404).json({ error: 'Owner not found' });
+      }
+      return res.json(result);
+    } catch (error) {
+      return res.status(404).json({ error: error.message });
+    }
+  })
+  .put(async (req, res) => {
+    const { ownerName } = req.params;
+    const { ownerData } = req.body;
+    try {
+      const result = await Owners.updateOwner(ownerName, ownerData);
+      return res.json(result);
+    } catch (error) {
+      return res.status(422).json({ error: error.message });
+    }
+  })
+  .delete(async (req, res) => {
+    const { ownerName } = req.params;
+    try {
+      const result = await Owners.deleteOwner(ownerName);
+      return res.json(result);
+    } catch (error) {
+      return res.status(422).json({ error: error.message });
+    }
+  });
 
 // router.route('/:userId/landHoldings')
 // // fetching land holdings
