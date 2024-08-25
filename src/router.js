@@ -57,8 +57,11 @@ router.route('/:userId/owners/:ownerName')
     }
   })
   .put(async (req, res) => {
+    console.log('params', req.params);
     const { ownerName } = req.params;
-    const { ownerData } = req.body;
+    console.log('ownerName', ownerName);
+    const ownerData = req.body;
+    console.log('ownerData', ownerData);
     try {
       const result = await Owners.updateOwner(ownerName, ownerData);
       return res.json(result);
