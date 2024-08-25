@@ -27,7 +27,6 @@ router.route('/:userId/owners')
       const response = await User.getOwners(userId);
       return res.json(response);
     } catch (error) {
-      console.log('get owners error', error.message);
       return res.status(404).json({ error: error.message });
     }
   })
@@ -40,7 +39,6 @@ router.route('/:userId/owners')
       const response = await User.saveOwner(userId, ownerData);
       return res.json(response);
     } catch (error) {
-      console.log('post owners error', error.message);
       return res.status(422).json({ error: error.message });
     }
   });

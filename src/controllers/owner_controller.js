@@ -14,7 +14,22 @@ export async function getOwner(ownerName) {
   // Await finding one owner and returning it
   try {
     const owner = await OwnerModel.findOne({ ownerName });
-    return owner;
+
+    const ownerData = {
+      ownerName: owner.ownerName,
+      entityType: owner.entityType,
+      ownerType: owner.ownerType,
+      address: owner.address,
+      totalHoldings: owner.totalHoldings,
+      classA: owner.classA,
+      classB: owner.classB,
+      classC: owner.classC,
+      classD: owner.classD,
+      legalEntities: owner.legalEntities,
+      mineralAcres: owner.mineralAcres,
+    };
+
+    return ownerData;
   } catch (error) {
     throw new Error(`Retrieve owner error: ${error}`);
   }
