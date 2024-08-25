@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as Owners from './controllers/owner_controller';
-// import * as Land from './controllers/land_controller';
+import * as Land from './controllers/land_controller';
 import * as User from './controllers/user_controller';
 // import signS3 from './services/s3';
 
@@ -79,28 +79,29 @@ router.route('/:userId/owners/:ownerName')
     }
   });
 
-// router.route('/:userId/landHoldings')
-// // fetching land holdings
-//   .get(async (req, res) => {
-//     // use req.body etc to await some contoller function
-//     // send back the result
-//     // or catch the error and send back an error
-//     try {
-//       const result = await Land.getLandHoldings();
-//       return res.json(result);
-//     } catch (error) {
-//       return res.status(422).json({ error: error.message });
-//     }
-//   })
-//   .post(async (req, res) => {
-//     const fields = req.body;
-//     try {
-//       const result = await Land.createLandHolding(fields);
-//       return res.json(result);
-//     } catch (error) {
-//       return res.status(422).json({ error: error.message });
-//     }
-//   });
+router.route('/:userId/landHoldings')
+// fetching land holdings
+  .get(async (req, res) => {
+    const { userId } = req.params;
+    const { ownerName } = req.body;
+
+    try {
+      const result = await Land.getOwnersLandHoldings(userId, ownerName);
+      return res.json(result);
+    } catch (error) {
+      return res.status(422).json({ error: error.message });
+    }
+  })
+  .post(async (req, res) => {
+    const { userId } = req.params;
+    const { ownerName, landData } = req.body;
+    try {
+      const result = await Land.saveLandHolding(userId, ownerName, landData);
+      return res.json(result);
+    } catch (error) {
+      return res.status(422).json({ error: error.message });
+    }
+  });
 
 // router.route('/:userId/landHoldings/:name')
 //   .get(async (req, res) => {
