@@ -10,10 +10,14 @@ export const isAddressTaken = async (address) => {
   return addressTaken;
 };
 
-export async function getOwner(ownerName) {
+export async function getOwner(ownerName, userId) {
   // Await finding one owner and returning it
   try {
     const owner = await OwnerModel.findOne({ ownerName });
+
+    if (owner.userId !== userId) {
+      throw new Error('Not authenticated to view this owner.');
+    }
 
     const ownerData = {
       ownerName: owner.ownerName,

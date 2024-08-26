@@ -45,9 +45,9 @@ router.route('/:userId/owners')
 
 router.route('/:userId/owners/:ownerName')
   .get(async (req, res) => {
-    const { ownerName } = req.params;
+    const { ownerName, userId } = req.params;
     try {
-      const result = await Owners.getOwner(ownerName);
+      const result = await Owners.getOwner(ownerName, userId);
       if (!result) {
         return res.status(404).json({ error: 'Owner not found' });
       }
@@ -57,11 +57,8 @@ router.route('/:userId/owners/:ownerName')
     }
   })
   .put(async (req, res) => {
-    console.log('params', req.params);
     const { ownerName } = req.params;
-    console.log('ownerName', ownerName);
     const ownerData = req.body;
-    console.log('ownerData', ownerData);
     try {
       const result = await Owners.updateOwner(ownerName, ownerData);
       return res.json(result);
@@ -79,62 +76,67 @@ router.route('/:userId/owners/:ownerName')
     }
   });
 
-router.route('/:userId/landHoldings')
+router.route('/:userId/owners/:ownerName/land')
 // fetching land holdings
   .get(async (req, res) => {
     const { userId } = req.params;
     const { ownerName } = req.body;
-
     try {
       const result = await Land.getOwnersLandHoldings(userId, ownerName);
-      return res.json(result);
+      const data = res.json(result);
+      return data;
     } catch (error) {
       return res.status(422).json({ error: error.message });
     }
   })
   .post(async (req, res) => {
-    const { userId } = req.params;
-    const { ownerName, landData } = req.body;
+    const { userId, ownerName } = req.params;
+    const landData = req.body;
+
+    console.log('landData', landData);
+
     try {
       const result = await Land.saveLandHolding(userId, ownerName, landData);
+      const data = res.json(result);
+      return data;
+    } catch (error) {
+      console.log('error in post', error);
+      return res.status(422).json({ error: error.message });
+    }
+  });
+
+router.route('/:userId/owners/:ownerName/land/:landName')
+  .get(async (req, res) => {
+    const { name } = req.params;
+    try {
+      const result = await Land.getLandHolding(name);
+      if (!result) {
+        return res.status(404).json({ error: 'Land holding not found' });
+      }
+      return res.json(result);
+    } catch (error) {
+      return res.status(404).json({ error: error.message });
+    }
+  })
+  .put(async (req, res) => {
+    const { name } = req.params;
+    const fields = req.body;
+    try {
+      const result = await Land.updateLandHolding(name, fields);
+      return res.json(result);
+    } catch (error) {
+      return res.status(422).json({ error: error.message });
+    }
+  })
+  .delete(async (req, res) => {
+    const { userId, ownerName, landName } = req.params;
+    try {
+      const result = await Land.deleteLandHolding(userId, ownerName, landName);
       return res.json(result);
     } catch (error) {
       return res.status(422).json({ error: error.message });
     }
   });
-
-// router.route('/:userId/landHoldings/:name')
-//   .get(async (req, res) => {
-//     const { name } = req.params;
-//     try {
-//       const result = await Land.getLandHolding(name);
-//       if (!result) {
-//         return res.status(404).json({ error: 'Land holding not found' });
-//       }
-//       return res.json(result);
-//     } catch (error) {
-//       return res.status(404).json({ error: error.message });
-//     }
-//   })
-//   .put(async (req, res) => {
-//     const { name } = req.params;
-//     const fields = req.body;
-//     try {
-//       const result = await Land.updateLandHolding(name, fields);
-//       return res.json(result);
-//     } catch (error) {
-//       return res.status(422).json({ error: error.message });
-//     }
-//   })
-//   .delete(async (req, res) => {
-//     const { name } = req.params;
-//     try {
-//       const result = await Land.deleteLandHolding(name);
-//       return res.json(result);
-//     } catch (error) {
-//       return res.status(422).json({ error: error.message });
-//     }
-//   });
 
 // router.get('/sign-s3', signS3);
 
