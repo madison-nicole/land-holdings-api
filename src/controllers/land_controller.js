@@ -39,7 +39,6 @@ export async function saveLandHolding(userId, ownerName, landData) {
   const landHolding = new LandModel();
 
   // Save the fields
-  landHolding.userId = userId;
   landHolding.name = landData.name;
   landHolding.ownerName = ownerName;
   landHolding.legalEntity = landData.legalEntity;
@@ -51,23 +50,23 @@ export async function saveLandHolding(userId, ownerName, landData) {
   landHolding.range = landData.range;
   landHolding.titleSource = landData.titleSource;
 
-  const newLandHoldings = { ...owner.landHoldings, ...landHolding };
-  console.log('newLandHoldings ', newLandHoldings);
+  const newLandHoldings = { ...owner.landHoldings };
+  newLandHoldings[landHolding.name] = landHolding;
   owner.landHoldings = newLandHoldings;
-
-  // Await creating the land holding and saving it
-  try {
-    await landHolding.save();
-  } catch (error) {
-    throw new Error(`Create land holding error: ${error}`);
-  }
 
   // Save this to the specified owner model
   try {
     await owner.save();
-    return owner;
   } catch (error) {
     throw new Error(`Save to owner error: ${error}`);
+  }
+
+  // Await creating the land holding and saving it
+  try {
+    await landHolding.save();
+    return landHolding;
+  } catch (error) {
+    throw new Error(`Create land holding error: ${error}`);
   }
 }
 
@@ -85,13 +84,33 @@ export async function getOwnersLandHoldings(userId, ownerName) {
 }
 
 export async function deleteLandHolding(userId, ownerName, landName) {
-  // Await deleting one owner and receiving confirmation
+  let owner;
+
   try {
-    const deletedLandHolding = await LandModel.findOneAndDelete({ name: landName, userId, ownerName });
-    return deletedLandHolding;
+    owner = await OwnerModel.findOne({ ownerName });
+  } catch (error) {
+    throw new Error(`Cannot find owner: ${error}`);
+  }
+
+  if (!owner) {
+    throw new Error('Owner not found');
+  }
+
+  if (owner.userId !== userId) {
+    throw new Error('Not authenticated');
+  }
+
+  const newLand = { ...owner.landHoldings };
+  delete newLand[landName];
+  owner.landHoldings = newLand;
+
+  try {
+    await owner.save();
   } catch (error) {
     throw new Error(`Delete land holding error: ${error}`);
   }
+
+  return owner;
 }
 
 // export async function getLandHolding(name) {

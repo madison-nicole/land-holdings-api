@@ -79,8 +79,7 @@ router.route('/:userId/owners/:ownerName')
 router.route('/:userId/owners/:ownerName/land')
 // fetching land holdings
   .get(async (req, res) => {
-    const { userId } = req.params;
-    const { ownerName } = req.body;
+    const { userId, ownerName } = req.params;
     try {
       const result = await Land.getOwnersLandHoldings(userId, ownerName);
       const data = res.json(result);
@@ -92,15 +91,11 @@ router.route('/:userId/owners/:ownerName/land')
   .post(async (req, res) => {
     const { userId, ownerName } = req.params;
     const landData = req.body;
-
-    console.log('landData', landData);
-
     try {
       const result = await Land.saveLandHolding(userId, ownerName, landData);
       const data = res.json(result);
       return data;
     } catch (error) {
-      console.log('error in post', error);
       return res.status(422).json({ error: error.message });
     }
   });
