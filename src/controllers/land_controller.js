@@ -131,12 +131,28 @@ export async function getLandHolding(userId, ownerName, landName) {
     throw new Error('Not authenticated');
   }
 
+  let landHolding;
+
   try {
-    const landHolding = owner.landHoldings[landName];
-    return landHolding;
+    landHolding = owner.landHoldings[landName];
   } catch (error) {
     throw new Error(`Retrieve land holding error: ${error}`);
   }
+
+  const landData = {
+    name: landHolding.name,
+    ownerName: landHolding.ownerName,
+    legalEntity: landHolding.legalEntity,
+    mineralAcres: landHolding.mineralAcres,
+    royalty: landHolding.royalty,
+    sectionName: landHolding.sectionName,
+    section: landHolding.section,
+    township: landHolding.township,
+    range: landHolding.range,
+    titleSource: landHolding.titleSource,
+  };
+
+  return landData;
 }
 
 // export async function updateLandHolding(name, landData) {
