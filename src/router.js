@@ -102,9 +102,9 @@ router.route('/:userId/owners/:ownerName/land')
 
 router.route('/:userId/owners/:ownerName/land/:landName')
   .get(async (req, res) => {
-    const { name } = req.params;
+    const { userId, ownerName, landName } = req.params;
     try {
-      const result = await Land.getLandHolding(name);
+      const result = await Land.getLandHolding(userId, ownerName, landName);
       if (!result) {
         return res.status(404).json({ error: 'Land holding not found' });
       }
