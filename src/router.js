@@ -114,10 +114,10 @@ router.route('/:userId/owners/:ownerName/land/:landName')
     }
   })
   .put(async (req, res) => {
-    const { name } = req.params;
-    const fields = req.body;
+    const { userId, ownerName, landName } = req.params;
+    const landData = req.body;
     try {
-      const result = await Land.updateLandHolding(name, fields);
+      const result = await Land.updateLandHolding(userId, ownerName, landName, landData);
       return res.json(result);
     } catch (error) {
       return res.status(422).json({ error: error.message });

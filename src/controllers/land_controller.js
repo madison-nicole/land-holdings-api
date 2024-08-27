@@ -155,13 +155,33 @@ export async function getLandHolding(userId, ownerName, landName) {
   return landData;
 }
 
-// export async function updateLandHolding(name, landData) {
-//   // Await updating an owner listing and returning the updated version
-//   try {
-//     await LandModel.findOneAndUpdate({ name }, { ...landData });
-//     const updatedLandHolding = await LandModel.findOne({ name });
-//     return updatedLandHolding;
-//   } catch (error) {
-//     throw new Error(`Update land holding error: ${error}`);
-//   }
-// }
+export async function updateLandHolding(userId, ownerName, landName, landData) {
+  // Await finding the owner
+  let owner;
+
+  try {
+    owner = await OwnerModel.findOne({ ownerName });
+  } catch (error) {
+    throw new Error(`Cannot find owner: ${error}`);
+  }
+
+  if (!owner) {
+    throw new Error('Owner not found');
+  }
+
+  if (owner.userId !== userId) {
+    throw new Error('Not authenticated');
+  }
+
+  const newLandHoldings = { ...owner.landHoldings };
+  newLandHoldings[landName] = landData;
+  owner.landHoldings = newLandHoldings;
+
+  try {
+    await owner.save();
+  } catch (error) {
+    throw new Error(`Update land holding error: ${error}`);
+  }
+
+  return owner.landHoldings[landName];
+}
